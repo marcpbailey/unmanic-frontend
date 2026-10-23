@@ -274,6 +274,54 @@
               />
             </div>
 
+            <div v-if="enableWebScanner === true" class="q-pt-md q-pb-sm">
+              <div class="text-subtitle2 q-mb-sm">
+                {{ $t('components.settings.library.webWriteConnection') }}
+              </div>
+              <q-input
+                outlined
+                color="primary"
+                v-model="webWriteUrl"
+                type="url"
+                :label="$t('components.settings.library.webWriteUrl')"
+                :hint="$t('components.settings.library.webWriteUrlHint')"
+                autocomplete="url"
+              />
+            </div>
+            <div v-if="enableWebScanner === true" class="q-pb-sm">
+              <q-checkbox
+                v-model="webWriteUseSeparateCredentials"
+                :label="$t('components.settings.library.webWriteUseSeparateCredentials')"
+              />
+            </div>
+            <div v-if="enableWebScanner === true && webWriteUseSeparateCredentials" class="q-pb-sm">
+              <q-input
+                outlined
+                color="primary"
+                v-model="webWriteUsername"
+                :label="$t('components.settings.library.webWriteUsername')"
+                autocomplete="username"
+              />
+            </div>
+            <div v-if="enableWebScanner === true && webWriteUseSeparateCredentials" class="q-pb-sm">
+              <q-input
+                outlined
+                color="primary"
+                v-model="webWritePassword"
+                type="password"
+                :label="$t('components.settings.library.webWritePassword')"
+                :hint="webWritePasswordSet ? $t('components.settings.library.webWritePasswordKeepHint') : undefined"
+                autocomplete="current-password"
+                @update:model-value="clearWebWritePassword = false"
+              />
+            </div>
+            <div v-if="enableWebScanner === true && webWriteUseSeparateCredentials && webWritePasswordSet" class="q-pb-sm">
+              <q-checkbox
+                v-model="clearWebWritePassword"
+                :label="$t('components.settings.library.clearWebWritePassword')"
+              />
+            </div>
+
             <div class="q-pb-sm">
               <q-skeleton
                 v-if="priorityScore === null"
@@ -441,6 +489,12 @@ const webUsername = ref('')
 const webPassword = ref('')
 const webPasswordSet = ref(false)
 const clearWebPassword = ref(false)
+const webWriteUrl = ref('')
+const webWriteUseSeparateCredentials = ref(false)
+const webWriteUsername = ref('')
+const webWritePassword = ref('')
+const webWritePasswordSet = ref(false)
+const clearWebWritePassword = ref(false)
 const priorityScore = ref(null)
 const tags = ref(null)
 const enabledPlugins = ref(null)
@@ -501,6 +555,12 @@ const currentSnapshot = computed(() => {
     webPasswordSet: webPasswordSet.value,
     webPasswordChanged: Boolean(webPassword.value),
     clearWebPassword: clearWebPassword.value,
+    webWriteUrl: webWriteUrl.value,
+    webWriteUseSeparateCredentials: webWriteUseSeparateCredentials.value,
+    webWriteUsername: webWriteUsername.value,
+    webWritePasswordSet: webWritePasswordSet.value,
+    webWritePasswordChanged: Boolean(webWritePassword.value),
+    clearWebWritePassword: clearWebWritePassword.value,
     priorityScore: priorityScore.value,
     tags: [...tags.value],
     enabledPlugins: pluginSnapshot
@@ -541,6 +601,12 @@ const fetchLibraryConfig = (libraryId) => {
     webPassword.value = ''
     webPasswordSet.value = libraryConfig.web_password_set === true
     clearWebPassword.value = false
+    webWriteUrl.value = libraryConfig.web_write_url || ''
+    webWriteUseSeparateCredentials.value = libraryConfig.web_write_credentials_same_as_read === false
+    webWriteUsername.value = libraryConfig.web_write_username || ''
+    webWritePassword.value = ''
+    webWritePasswordSet.value = libraryConfig.web_write_password_set === true
+    clearWebWritePassword.value = false
     priorityScore.value = libraryConfig.priority_score
     tags.value = libraryConfig.tags
     enabledPlugins.value = response.data.plugins.enabled_plugins
@@ -561,6 +627,9 @@ const saveLibraryConfig = async ({ hideOnSuccess = false } = {}) => {
       enable_web_scanner: enableWebScanner.value,
       web_url: webUrl.value,
       web_username: webUsername.value,
+      web_write_url: webWriteUrl.value,
+      web_write_username: webWriteUsername.value,
+      web_write_credentials_same_as_read: !webWriteUseSeparateCredentials.value,
       priority_score: priorityScore.value,
       tags: tags.value,
     },
@@ -572,6 +641,11 @@ const saveLibraryConfig = async ({ hideOnSuccess = false } = {}) => {
     data.library_config.clear_web_password = true
   } else if (webPassword.value) {
     data.library_config.web_password = webPassword.value
+  }
+  if (clearWebWritePassword.value) {
+    data.library_config.clear_web_write_password = true
+  } else if (webWritePassword.value) {
+    data.library_config.web_write_password = webWritePassword.value
   }
   try {
     await axios({
@@ -593,6 +667,13 @@ const saveLibraryConfig = async ({ hideOnSuccess = false } = {}) => {
     }
     webPassword.value = ''
     clearWebPassword.value = false
+    if (clearWebWritePassword.value) {
+      webWritePasswordSet.value = false
+    } else if (webWritePassword.value) {
+      webWritePasswordSet.value = true
+    }
+    webWritePassword.value = ''
+    clearWebWritePassword.value = false
     componentKey.value += 1
     updateSnapshot()
     if (hideOnSuccess) {
@@ -790,11 +871,17 @@ const cloneLibrary = () => {
       enable_web_scanner: enableWebScanner.value,
       web_url: webUrl.value,
       web_username: webUsername.value,
+      web_write_url: webWriteUrl.value,
+      web_write_username: webWriteUsername.value,
+      web_write_credentials_same_as_read: !webWriteUseSeparateCredentials.value,
       priority_score: priorityScore.value,
       tags: tags.value,
     }
     if (webPassword.value) {
       configData.library_config.web_password = webPassword.value
+    }
+    if (webWritePassword.value) {
+      configData.library_config.web_write_password = webWritePassword.value
     }
     const importString = JSON.stringify(configData, null, 2)
     currentID.value = 0
@@ -838,6 +925,12 @@ const resetLibraryConfig = () => {
   webPassword.value = ''
   webPasswordSet.value = false
   clearWebPassword.value = false
+  webWriteUrl.value = ''
+  webWriteUseSeparateCredentials.value = false
+  webWriteUsername.value = ''
+  webWritePassword.value = ''
+  webWritePasswordSet.value = false
+  clearWebWritePassword.value = false
   priorityScore.value = null
   tags.value = null
   enabledPlugins.value = null
