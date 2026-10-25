@@ -105,7 +105,7 @@
                       </q-item-label>
                     </q-item-section>
 
-                    <q-item-section v-if="!$q.platform.is.mobile">
+                    <q-item-section v-if="!$q.platform.is.mobile" class="library-scanner-statuses">
                       <q-item-label lines="1">
                         <div class="row">
                           <div class="col-6 text-left">
@@ -718,6 +718,15 @@ div.sub-setting {
 
 .library-list {
   margin-left: 0;
+}
+
+.library-scanner-statuses .text-grey-8 {
+  opacity: 0.4;
+}
+
+.library-scanner-statuses .text-primary {
+  opacity: 1;
+  font-weight: 600;
 }
 
 .library-path-list-item {
