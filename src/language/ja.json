@@ -203,6 +203,7 @@
 				"enableReceiveRemoteFilesOnly": "このライブラリをリンクされたリモートタスク専用にする",
 				"pathDisabledReceiveRemoteFilesOnly": "このライブラリはリンクされたリモートタスク専用に設定されているため、このオプションは無効です",
 				"libraryRemoteOnlyStatus": "リモートのみ",
+				"libraryApiOnlyStatusLabel": "API のみ",
 				"enableScanner": "このライブラリに対してライブラリ スキャナを有効にする",
 				"enableInotify": "このライブラリのファイル モニターを有効にする",
 				"libraryFileMonitorStatusLabel": "ファイルモニター",

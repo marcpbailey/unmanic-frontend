@@ -106,7 +106,18 @@
                     </q-item-section>
 
                     <q-item-section v-if="!$q.platform.is.mobile" class="library-scanner-statuses">
-                      <q-item-label lines="1">
+                      <q-item-label v-if="path.enableRemoteOnly" lines="1">
+                        <div class="row">
+                          <div class="col-6 text-left">
+                            <span class="text-primary">
+                              <q-icon color="check" name="check"/>
+                              |
+                              {{ $t('components.settings.library.libraryApiOnlyStatusLabel') }}
+                            </span>
+                          </div>
+                        </div>
+                      </q-item-label>
+                      <q-item-label v-if="!path.enableRemoteOnly" lines="1">
                         <div class="row">
                           <div class="col-6 text-left">
                             <span
@@ -119,7 +130,7 @@
                           </div>
                         </div>
                       </q-item-label>
-                      <q-item-label lines="1">
+                      <q-item-label v-if="!path.enableRemoteOnly" lines="1">
                         <div class="row">
                           <div class="col-6 text-left">
                             <span
@@ -132,7 +143,7 @@
                           </div>
                         </div>
                       </q-item-label>
-                      <q-item-label lines="1">
+                      <q-item-label v-if="!path.enableRemoteOnly" lines="1">
                         <div class="row">
                           <div class="col-6 text-left">
                             <span

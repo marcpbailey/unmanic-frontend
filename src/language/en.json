@@ -203,6 +203,7 @@
         "enableReceiveRemoteFilesOnly": "Use this library only for linked remote tasks",
         "pathDisabledReceiveRemoteFilesOnly": "Option disabled because this library is configured only for linked remote tasks",
         "libraryRemoteOnlyStatus": "Remote only",
+        "libraryApiOnlyStatusLabel": "API only",
         "enableScanner": "Enable library scanner for this library",
         "enableInotify": "Enable file monitor for this library",
         "libraryFileMonitorStatusLabel": "File monitor",
