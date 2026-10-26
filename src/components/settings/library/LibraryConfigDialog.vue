@@ -152,6 +152,25 @@
                 </q-item-section>
               </q-item>
             </div>
+            <div class="q-pb-sm">
+              <q-skeleton v-if="libraryOptionsLoading" type="QInput"/>
+              <q-select
+                v-else
+                outlined
+                color="primary"
+                multiple
+                use-chips
+                emit-value
+                map-options
+                v-model="waitForLibraryIds"
+                :options="waitForLibraryOptions"
+                option-value="id"
+                option-label="name"
+                :label="$t('components.settings.library.waitForLibraries')"
+                :hint="$t('components.settings.library.waitForLibrariesHint')"
+                :loading="libraryOptionsLoading"
+                :disable="libraryOptionsLoading"/>
+            </div>
             <div
               v-if="enableReceiveRemoteFilesOnly !== true"
               class="q-pb-sm">
@@ -368,6 +387,10 @@ const path = ref(null)
 const enableReceiveRemoteFilesOnly = ref(null)
 const enableScanner = ref(null)
 const enableInotify = ref(null)
+const waitForLibraryIds = ref([])
+const libraryOptions = ref([])
+const libraryOptionsLoading = ref(false)
+const waitForLibraryOptions = computed(() => libraryOptions.value.filter(library => library.id !== currentID.value))
 const priorityScore = ref(null)
 const tags = ref(null)
 const enabledPlugins = ref(null)
@@ -421,6 +444,7 @@ const currentSnapshot = computed(() => {
     enableReceiveRemoteFilesOnly: enableReceiveRemoteFilesOnly.value,
     enableScanner: enableScanner.value,
     enableInotify: enableInotify.value,
+    waitForLibraryIds: [...waitForLibraryIds.value].sort((a, b) => a - b),
     priorityScore: priorityScore.value,
     tags: [...tags.value],
     enabledPlugins: pluginSnapshot
@@ -441,6 +465,12 @@ const updateSnapshot = () => {
 }
 
 const fetchLibraryConfig = (libraryId) => {
+  libraryOptionsLoading.value = true
+  axios.get(getUnmanicApiUrl('v2', 'settings/libraries')).then((response) => {
+    libraryOptions.value = response.data.libraries
+  }).finally(() => {
+    libraryOptionsLoading.value = false
+  })
   const data = { id: libraryId }
   axios({
     method: 'post',
@@ -455,6 +485,7 @@ const fetchLibraryConfig = (libraryId) => {
     enableReceiveRemoteFilesOnly.value = libraryConfig.enable_remote_only
     enableScanner.value = libraryConfig.enable_scanner
     enableInotify.value = libraryConfig.enable_inotify
+    waitForLibraryIds.value = libraryConfig.wait_for_library_ids || []
     priorityScore.value = libraryConfig.priority_score
     tags.value = libraryConfig.tags
     enabledPlugins.value = response.data.plugins.enabled_plugins
@@ -472,6 +503,7 @@ const saveLibraryConfig = async ({ hideOnSuccess = false } = {}) => {
       enable_remote_only: enableReceiveRemoteFilesOnly.value,
       enable_scanner: enableScanner.value,
       enable_inotify: enableInotify.value,
+      wait_for_library_ids: waitForLibraryIds.value,
       priority_score: priorityScore.value,
       tags: tags.value,
     },
@@ -686,6 +718,7 @@ const cloneLibrary = () => {
       enable_remote_only: enableReceiveRemoteFilesOnly.value,
       enable_scanner: enableScanner.value,
       enable_inotify: enableInotify.value,
+      wait_for_library_ids: waitForLibraryIds.value,
       priority_score: priorityScore.value,
       tags: tags.value,
     }
@@ -725,6 +758,8 @@ const resetLibraryConfig = () => {
   enableReceiveRemoteFilesOnly.value = null
   enableScanner.value = null
   enableInotify.value = null
+  waitForLibraryIds.value = []
+  libraryOptions.value = []
   priorityScore.value = null
   tags.value = null
   enabledPlugins.value = null
