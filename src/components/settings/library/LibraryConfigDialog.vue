@@ -945,7 +945,6 @@ const resetLibraryConfig = () => {
   webWritePasswordSet.value = false
   clearWebWritePassword.value = false
   waitForLibraryIds.value = []
-  libraryOptions.value = []
   priorityScore.value = null
   tags.value = null
   enabledPlugins.value = null
