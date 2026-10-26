@@ -109,6 +109,7 @@
 </template>
 
 <script>
+import { workerProgress } from 'src/js/workerProgress';
 import WorkerProgressCard from 'components/dashboard/workers/WorkerProgressCard.vue'
 import PendingTasks from 'components/dashboard/pending/PendingTasksDashboardSection.vue'
 import CompletedTasks from "components/dashboard/completed/CompletedTasksDashboardSection.vue";
@@ -252,30 +253,33 @@ export default {
           // Set the worker log file
           workerData['worker-' + worker.id].workerLog = worker.worker_log_tail;
 
-          const percentValue = Number(worker.subprocess?.percent);
-          const elapsedValue = Number(worker.subprocess?.elapsed);
-          const hasPercent = Number.isFinite(percentValue) && worker.subprocess?.percent !== '';
-          const hasElapsed = Number.isFinite(elapsedValue) && elapsedValue >= 0;
-          const canEstimate = hasPercent && percentValue > 0 && hasElapsed;
+          const status = workerProgress(worker.subprocess);
+          const percentValue = status.percent;
+          const elapsedValue = status.elapsed;
+          const hasPercent = status.known;
+          const hasElapsed = status.hasElapsed;
+          const canEstimate = hasPercent && percentValue > 0 && hasElapsed && !status.phase;
 
           // Set progress if progress is given
           if (hasPercent) {
             // Set the progress graph
+            workerData['worker-' + worker.id].indeterminate = false;
             workerData['worker-' + worker.id].progress = percentValue;
-            workerData['worker-' + worker.id].progressText = worker.subprocess.percent + '%';
+            workerData['worker-' + worker.id].progressText = status.phase
+              ? $t('components.workers.phaseProgress', { percent: percentValue })
+              : percentValue + '%';
           } else {
             // Set progress as 'indeterminate' if no progress is given
             workerData['worker-' + worker.id].indeterminate = true;
             workerData['worker-' + worker.id].progressText = '...';
           }
 
-          // Set the elapsed and ETC only when values are valid
+          // Elapsed time remains useful when progress is indeterminate.
+          workerData['worker-' + worker.id].elapsed = hasElapsed ? dateTools.printSecondsAsDuration(elapsedValue) : '';
           if (canEstimate) {
-            workerData['worker-' + worker.id].elapsed = dateTools.printSecondsAsDuration(elapsedValue);
             const etcDuration = calculateEtc(percentValue, elapsedValue);
             workerData['worker-' + worker.id].etc = dateTools.printSecondsAsDuration(etcDuration);
           } else {
-            workerData['worker-' + worker.id].elapsed = '';
             workerData['worker-' + worker.id].etc = '...';
           }
 
