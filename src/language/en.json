@@ -347,6 +347,7 @@
       }
     },
     "workers": {
+      "phaseProgress": "{percent}% of current phase",
       "listEmpty": "There are no workers currently running. Increase the worker count in Unmanic's settings to spawn a worker.",
       "pauseWorker": "Pause this worker",
       "workerPaused": "Worker has been paused",
@@ -383,6 +384,9 @@
       }
     },
     "pendingTasks": {
+      "completingScan": "Completing scan",
+      "completionElapsed": "Elapsed: {seconds}s",
+      "completionCount": "{current}/{total} {unit}",
       "rescanLibrary": "Rescan library now",
       "pauseLibraryScan": "Pause library scan",
       "resumeLibraryScan": "Resume library scan",
