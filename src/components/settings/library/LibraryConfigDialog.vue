@@ -153,23 +153,11 @@
               </q-item>
             </div>
             <div class="q-pb-sm">
-              <q-skeleton v-if="libraryOptionsLoading" type="QInput"/>
-              <q-select
-                v-else
-                outlined
-                color="primary"
-                multiple
-                use-chips
-                emit-value
-                map-options
+              <LibrarySelect
                 v-model="waitForLibraryIds"
-                :options="waitForLibraryOptions"
-                option-value="id"
-                option-label="name"
+                :library-id="currentID"
                 :label="$t('components.settings.library.waitForLibraries')"
-                :hint="$t('components.settings.library.waitForLibrariesHint')"
-                :loading="libraryOptionsLoading"
-                :disable="libraryOptionsLoading"/>
+                :hint="$t('components.settings.library.waitForLibrariesHint')"/>
             </div>
             <div
               v-if="enableReceiveRemoteFilesOnly !== true"
@@ -477,6 +465,7 @@ import PluginSelectorDialog from 'components/settings/plugins/PluginSelectorDial
 import LibraryConfigurePluginFlowList from 'components/settings/library/partials/LibraryConfigurePluginFlowList'
 import JsonImportExportDialog from 'components/settings/library/JsonImportExportDialog.vue'
 import PluginInfoDialog from 'components/settings/plugins/PluginInfoDialog'
+import LibrarySelect from 'components/settings/library/LibrarySelect.vue'
 import UnmanicListActionButton from "components/ui/buttons/UnmanicListActionButton.vue"
 import UnmanicListAddButton from "components/ui/buttons/UnmanicListAddButton.vue"
 
@@ -515,9 +504,6 @@ const webWritePassword = ref('')
 const webWritePasswordSet = ref(false)
 const clearWebWritePassword = ref(false)
 const waitForLibraryIds = ref([])
-const libraryOptions = ref([])
-const libraryOptionsLoading = ref(false)
-const waitForLibraryOptions = computed(() => libraryOptions.value.filter(library => library.id !== currentID.value))
 const priorityScore = ref(null)
 const tags = ref(null)
 const enabledPlugins = ref(null)
@@ -605,12 +591,6 @@ const updateSnapshot = () => {
 }
 
 const fetchLibraryConfig = (libraryId) => {
-  libraryOptionsLoading.value = true
-  axios.get(getUnmanicApiUrl('v2', 'settings/libraries')).then((response) => {
-    libraryOptions.value = response.data.libraries
-  }).finally(() => {
-    libraryOptionsLoading.value = false
-  })
   const data = { id: libraryId }
   axios({
     method: 'post',
