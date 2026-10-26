@@ -739,7 +739,6 @@ const resetLibraryConfig = () => {
   enableScanner.value = null
   enableInotify.value = null
   waitForLibraryIds.value = []
-  libraryOptions.value = []
   priorityScore.value = null
   tags.value = null
   enabledPlugins.value = null
