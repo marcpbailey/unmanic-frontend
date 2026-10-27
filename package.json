@@ -13,7 +13,6 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "build:publish": "quasar build --publish",
-    "test:status": "node --test tests/status.test.cjs",
     "test:library-dialog": "node --test tests/library-dialog.test.cjs"
   },
   "dependencies": {

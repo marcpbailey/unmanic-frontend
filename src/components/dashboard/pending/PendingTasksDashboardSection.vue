@@ -25,8 +25,6 @@
 
     </q-card-section>
 
-    <ScanCompletionStatus :completion="scanState.completion"/>
-
     <!--MINIMAL SCREEN-->
     <q-card-section class="q-pb-none pending-tasks-card-body">
       <div class="pending-tasks-list-wrap">
@@ -119,14 +117,13 @@
 <script>
 import { defineComponent, ref } from "vue";
 import PendingTasksListDialog from "components/dashboard/pending/PendingTasksListDialog.vue";
-import ScanCompletionStatus from "components/dashboard/pending/ScanCompletionStatus.vue";
 import axios from "axios";
 import { getUnmanicApiUrl } from "src/js/unmanicGlobals";
 
 export default defineComponent({
   name: 'PendingTasks',
   emits: ['refresh-scan-state'],
-  components: { PendingTasksListDialog, ScanCompletionStatus },
+  components: { PendingTasksListDialog },
   setup() {
     const pendingTasksDetailsDialogRef = ref(null);
 
