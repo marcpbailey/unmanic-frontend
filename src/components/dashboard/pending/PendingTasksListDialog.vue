@@ -5,7 +5,6 @@
     @hide="onDialogHide"
   >
     <div class="pending-tasks-dialog">
-      <ScanCompletionStatus :completion="scanState.completion"/>
       <div class="pending-tasks-table-actions-bar q-pa-sm">
         <div class="row q-col-gutter-sm items-center pending-tasks-toolbar">
           <div v-if="showActionsToggle" class="col-12 row items-center justify-end">
@@ -365,7 +364,6 @@
 </template>
 
 <script setup>
-import ScanCompletionStatus from "components/dashboard/pending/ScanCompletionStatus.vue";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
